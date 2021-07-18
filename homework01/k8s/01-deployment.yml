@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-client-dep
+  labels:
+    app: simple-client
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simple-client
+  template:
+    metadata:
+      name: simple-client-app
+      labels:
+        app: simple-client
+    spec:
+      containers:
+        - name: simple-client-app
+          image: axelli/simple-client:v1
+          ports:
+            - name: app
+              containerPort: 8000
+          livenessProbe:
+            httpGet:
+              port: app
+              path: /health
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              port: app
+              path: /health/status
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3

@@ -1,0 +1,9 @@
+server.port: 8000
+
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: simple-client
+
+logging.level.org.springframework.web: DEBUG

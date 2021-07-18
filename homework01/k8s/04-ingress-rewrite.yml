@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simple-client-ingress-rewrite
+  annotations:
+    kubernates.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$3
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /otusapp/(\w*)($|/)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: simple-client-serv
+                port:
+                  number: 9000
