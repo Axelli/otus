@@ -1,15 +1,16 @@
-# Microservices
+## ДЗ 01 - Основы работы с Kubernetes (часть 2)
 
-### simple-client 
+### /simple-client 
 
 Минимальный сервис, который отвечает на порту 8000 имеет http-метод `GET /health/` RESPONSE: `{"status": "OK"}` 
 Образ запушен в dockerhub (`axelli/simple-client:v1`)
 
-### homework01
-
-ДЗ 01:
+### /k8s
 
 Манифесты k8s: Deployment, Service, Ingress. 
+
+---
+### ДЗ
 
 В **Deployment** указаны Liveness, Readiness пробы. 
 Количество реплик - 3. Image контейнера указан с Dockerhub.

@@ -1,0 +1,259 @@
+{
+	"info": {
+		"_postman_id": "fe25060a-0540-4228-9a5d-d0657d0ffee2",
+		"name": "homework02",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01. Save user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200)",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"userId\", jsonData.id);",
+							"",
+							"pm.test(\"Response user equals request user\", () => {",
+							"    pm.expect(jsonData.username).to.eql(\"test\", \"[username] is invalid\");",
+							"    pm.expect(jsonData.firstName).to.eql(\"Petya\", \"[firstName] is invalid\");",
+							"    pm.expect(jsonData.lastName).to.eql(\"Petrov\", \"[lastName] is invalid\");",
+							"    pm.expect(jsonData.email).to.eql(\"test@mail\", \"[email] is invalid\");",
+							"    pm.expect(jsonData.phone).to.eql(\"222\", \"[phone] is invalid\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test\",\n    \"firstName\": \"Petya\",\n    \"lastName\": \"Petrov\",\n    \"email\": \"test@mail\",\n    \"phone\": \"222\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02. Update user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200)",
+							"});",
+							"",
+							"pm.test(\"Response user equals request user\", () => {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.collectionVariables.get(\"userId\"), \"[id] is invalid\")",
+							"    pm.expect(jsonData.username).to.eql(\"test2\", \"[username] is invalid\");",
+							"    pm.expect(jsonData.firstName).to.eql(\"Petya2\", \"[firstName] is invalid\");",
+							"    pm.expect(jsonData.lastName).to.eql(\"Petrov2\", \"[lastName] is invalid\");",
+							"    pm.expect(jsonData.email).to.eql(\"test@mail2\", \"[email] is invalid\");",
+							"    pm.expect(jsonData.phone).to.eql(\"2222\", \"[phone] is invalid\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test2\",\n    \"firstName\": \"Petya2\",\n    \"lastName\": \"Petrov2\",\n    \"email\": \"test@mail2\",\n    \"phone\": \"2222\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03. Find user by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200)",
+							"});",
+							"",
+							"pm.test(\"Response has fields\", () => {",
+							"    pm.response.to.not.have.jsonBody(\"\");",
+							"",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.collectionVariables.get(\"userId\"), \"[id] is invalid\")",
+							"    pm.expect(jsonData.username).to.eql(\"test2\", \"[username] is invalid\");",
+							"    pm.expect(jsonData.firstName).to.eql(\"Petya2\", \"[firstName] is invalid\");",
+							"    pm.expect(jsonData.lastName).to.eql(\"Petrov2\", \"[lastName] is invalid\");",
+							"    pm.expect(jsonData.email).to.eql(\"test@mail2\", \"[email] is invalid\");",
+							"    pm.expect(jsonData.phone).to.eql(\"2222\", \"[phone] is invalid\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04. Get all users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200)",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05. Delete user by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200)",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "userId",
+			"value": 3
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://arch.homework"
+		}
+	]
+}

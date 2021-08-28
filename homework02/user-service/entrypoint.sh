@@ -1,0 +1,2 @@
+#!/bin/sh
+java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Djdk.attach.allowAttachSelf=true -XX:+PrintFlagsFinal -XshowSettings:vm -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:ErrorFile=/tmp/jdk.error -XX:+StartAttachListener org.springframework.boot.loader.JarLauncher

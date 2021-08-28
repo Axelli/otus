@@ -1,0 +1,77 @@
+{{- if .Values.migration.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "user-service.initdb" . }}
+  labels:
+    {{- include "user-service.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: {{ template "user-service.initdb" . }}
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: check-db-rediness
+          image: postgres:13.4
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Values.posgresql.service }}
+          command:
+            - sh
+            - "-c"
+            - |
+              until pg_isready -h $POSTGRES_HOST;
+              do echo waiting for db; sleep 2; done;
+      containers: # todo: use liquidbase
+        - name: init-db
+          image: postgres:13.4
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Values.posgresql.service }}
+            - name: POSTGRES_DB
+              value: {{ .Values.posgresql.db }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "user-service.secretName" . }}
+                  key: db-username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "user-service.secretName" . }}
+                  key: db-password
+          command:
+            - sh
+            - "-c"
+            - |
+              psql --host $POSTGRES_HOST -d $POSTGRES_DB -U $POSTGRES_USER <<-EOF
+                do \$\$
+                begin
+                    raise notice 'Starting script...';
+                    if (select to_regclass('public.tab_user') is null)
+                    then
+                        raise notice 'Creating structure...';
+
+                        create table public.tab_user
+                        (
+                            id         serial primary key,
+                            username   varchar(100) not null,
+                            first_name varchar(100),
+                            last_name  varchar(100),
+                            email      varchar(100),
+                            phone      varchar(40)
+                        );
+
+                        raise notice 'Filling data...';
+
+                        insert into tab_user(username, first_name, last_name, email, phone) values ('admin2', 'Ivan', 'Ivanov', 'ivan@mail', '911');
+                        insert into tab_user(username, first_name, last_name, email, phone) values ('user2', 'Vasya', 'Pupkin', 'vasya@mail', '111');
+                    end if;
+                    raise notice 'Done!';
+                end
+                \$\$;
+              EOF
+  backoffLimit: 3
+{{- end }}
