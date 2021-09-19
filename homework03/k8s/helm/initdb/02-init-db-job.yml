@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: initdb
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: initdb
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: check-db-rediness
+          image: postgres:13.4
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: host
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: port
+          command:
+            - sh
+            - "-c"
+            - |
+              until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT;
+              do echo waiting for db; sleep 2; done;
+      containers: # todo: use liquidbase
+        - name: init-db
+          image: postgres:13.4
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: host
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: port
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          command:
+            - sh
+            - "-c"
+            - |
+              psql --host $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER <<-EOF
+                do \$\$
+                begin
+                    raise notice 'Starting script...';
+                    if (select to_regclass('public.tab_user') is null)
+                    then
+                        raise notice 'Creating structure...';
+
+                        create table public.tab_user
+                        (
+                            id         serial primary key,
+                            username   varchar(100) not null,
+                            first_name varchar(100),
+                            last_name  varchar(100),
+                            email      varchar(100),
+                            phone      varchar(40)
+                        );
+
+                        raise notice 'Filling data...';
+
+                        insert into tab_user(username, first_name, last_name, email, phone) values ('admin', 'Ivan', 'Ivanov', 'ivan@mail', '911');
+                        insert into tab_user(username, first_name, last_name, email, phone) values ('user', 'Vasya', 'Pupkin', 'vasya@mail', '111');
+                    end if;
+                    raise notice 'Done!';
+                end
+                \$\$;
+              EOF
+  backoffLimit: 3
