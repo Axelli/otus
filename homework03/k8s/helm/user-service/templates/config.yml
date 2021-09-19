@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "user-service.congigMapName" . }}
+data:
+  db-url: {{ printf "jdbc:postgresql://%s/%s" .Values.posgresql.service .Values.posgresql.db | quote }}
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "user-service.secretName" . }}
+type: Opaque
+data:
+  db-username: {{ .Values.posgresql.username | b64enc | quote }}
+  db-password: {{ .Values.posgresql.password | b64enc | quote }}

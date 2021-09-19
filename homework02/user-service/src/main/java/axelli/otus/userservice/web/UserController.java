@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +17,15 @@ public class UserController {
 
     @GetMapping
     public List<User> findAll() {
+        return userService.findAll();
+    }
+
+    @GetMapping(params = "errorFrequency")
+    public List<User> findAllWithErrors(@RequestParam Long errorFrequency) {
+        var v = ThreadLocalRandom.current().nextDouble();
+        var frequency = 1.0 / errorFrequency;
+        if (v < frequency) throw new RuntimeException("Ooooops");
+
         return userService.findAll();
     }
 
