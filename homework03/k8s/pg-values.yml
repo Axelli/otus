@@ -1,0 +1,12 @@
+serviceMonitor:
+  enabled: true
+
+config:
+  datasource:
+    host: postgres
+    user: root
+    passwordSecret:
+      name: postgres-secret
+      key: password
+    port: "5432"
+    database: 'myapp'

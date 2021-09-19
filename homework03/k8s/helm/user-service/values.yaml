@@ -1,0 +1,26 @@
+replicaCount: 2
+
+posgresql:
+  username: root
+  password: my-secret-pw
+  service: postgres
+  db: myapp
+
+image:
+  repository: axelli/user-service
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 8080
+
+ingress:
+  enabled: true
+  host: arch.homework
+
+migration:
+  enabled: false
+
+metrics:
+  serviceMonitor:
+    enabled: true
