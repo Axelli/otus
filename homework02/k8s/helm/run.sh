@@ -1,4 +1,7 @@
 #!/bin/bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
 echo 'Installing postgres...'
 helm upgrade --install pg bitnami/postgresql -f pg/pg-helm-values.yml
 

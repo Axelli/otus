@@ -39,7 +39,9 @@ Postman коллекция для тестирования
 ### Для запуска
 1. Корневая папка https://github.com/Axelli/otus/tree/master/homework02/k8s/helm
 2. запустить скрипт `./run.sh`. Либо выполнить вручную:
-   * `helm upgrade --install pg bitnami/postgresql -f pg/pg-helm-values.yml` - установка/обновление postgresql
+   * `helm upgrade --install pg bitnami/postgresql -f pg/pg-helm-values.yml` - установка/обновление postgresql. При ошибке запуска выполнить:
+     * `helm repo add bitnami https://charts.bitnami.com/bitnami` - добавить репозиторий bitnami, если не установлен
+     * `helm repo update` - обновить зависимости 
    * `kubectl apply -f initdb` - применение джобы первоначальной миграции
    * `helm upgrade --install app user-service` - установка/обновление приложения user-service
 3. Приложение готово. Можно выполнять запросы вручную из постмана (коллекция в папке postman) или прогнать автотесты. Для запуска автотестов:
